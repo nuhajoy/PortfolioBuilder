@@ -1,53 +1,20 @@
-import React, { useCallback } from "react";
-
-// InputBox with visible border and styling
-const InputBox = React.memo(({ label, name, placeholder, value, onChange }) => (
-  <div className="mb-5">
-    <label
-      htmlFor={name}
-      className="block text-sm font-medium text-gray-700 mb-1"
-    >
-      {label}
-    </label>
-    <input
-      id={name}
-      type="text"
-      name={name}
-      value={value}
-      onChange={onChange}
-      placeholder={placeholder}
-      className="w-full px-4 py-2 bg-white text-gray-900 border border-gray-400 rounded-md shadow placeholder:text-gray-500 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
-    />
-  </div>
-));
-
-// TextareaBox with visible border and styling
-const TextareaBox = React.memo(
-  ({ label, name, placeholder, value, onChange }) => (
-    <div className="mb-5">
-      <label
-        htmlFor={name}
-        className="block text-sm font-medium text-gray-700 mb-1"
-      >
-        {label}
-      </label>
-      <textarea
-        id={name}
-        name={name}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        rows="4"
-        className="w-full px-4 py-2 bg-white text-gray-900 border border-gray-400 rounded-md shadow placeholder:text-gray-500 text-base resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
-      />
-    </div>
-  )
-);
+import React, { useState, useCallback } from "react";
 
 export default function FormBuilder({ formData, setFormData }) {
+  const [errors, setErrors] = useState({});
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.name) newErrors.name = "Name is required";
+    if (!formData.email) newErrors.email = "Valid email is required";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleChange = useCallback(
     (e) => {
       const { name, value, files } = e.target;
+      setErrors((prev) => ({ ...prev, [name]: "" }));
       if (name === "photo") {
         const reader = new FileReader();
         reader.onloadend = () => {
@@ -61,31 +28,80 @@ export default function FormBuilder({ formData, setFormData }) {
     [setFormData]
   );
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+
+    //  Proceed with next actions (submit, preview, etc.)
+    console.log("Form is valid and ready:", formData);
+  };
+
   return (
-    <div className="bg-white text-gray-900 p-6 max-w-3xl mx-auto">
+    <form
+      className="bg-white text-gray-900 p-6 max-w-3xl mx-auto"
+      onSubmit={handleSubmit}
+    >
       <section>
         <h2 className="text-lg font-bold mb-4">🧍 About Me</h2>
-        <InputBox
-          label="Name"
-          name="name"
-          placeholder="Your full name"
-          value={formData.name}
-          onChange={handleChange}
-        />
-        <InputBox
-          label="Title"
-          name="title"
-          placeholder="Your role or title"
-          value={formData.title}
-          onChange={handleChange}
-        />
-        <TextareaBox
-          label="Bio"
-          name="bio"
-          placeholder="Write a short introduction"
-          value={formData.bio}
-          onChange={handleChange}
-        />
+        <div className="mb-5">
+          <label
+            htmlFor="name"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Name
+          </label>
+          <input
+            id="name"
+            name="name"
+            type="text"
+            value={formData.name}
+            onChange={handleChange}
+            placeholder="Your full name"
+            className={`w-full px-4 py-2 bg-white text-gray-900 border ${
+              errors.name ? "border-red-500" : "border-gray-400"
+            } rounded-md shadow placeholder:text-gray-500 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 transition`}
+          />
+          {errors.name && (
+            <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+          )}
+        </div>
+
+        <div className="mb-5">
+          <label
+            htmlFor="title"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Title
+          </label>
+          <input
+            id="title"
+            name="title"
+            type="text"
+            value={formData.title}
+            onChange={handleChange}
+            placeholder="Your role or title"
+            className="w-full px-4 py-2 bg-white text-gray-900 border border-gray-400 rounded-md shadow text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+          />
+        </div>
+
+        <div className="mb-5">
+          <label
+            htmlFor="bio"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Bio
+          </label>
+          <textarea
+            id="bio"
+            name="bio"
+            value={formData.bio}
+            onChange={handleChange}
+            placeholder="Write a short introduction"
+            rows="4"
+            className="w-full px-4 py-2 bg-white text-gray-900 border border-gray-400 rounded-md shadow placeholder:text-gray-500 text-base resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+          />
+        </div>
+
         <div className="mb-5">
           <label
             htmlFor="photo"
@@ -113,53 +129,131 @@ export default function FormBuilder({ formData, setFormData }) {
 
       <section>
         <h2 className="text-lg font-bold mt-6 mb-4">💼 Portfolio</h2>
-        <TextareaBox
-          label="Skills"
-          name="skills"
-          placeholder="Your technical skills"
-          value={formData.skills}
-          onChange={handleChange}
-        />
-        <TextareaBox
-          label="Experience"
-          name="experience"
-          placeholder="Experience or education"
-          value={formData.experience}
-          onChange={handleChange}
-        />
-        <TextareaBox
-          label="Projects"
-          name="projects"
-          placeholder="List your favorite projects"
-          value={formData.projects}
-          onChange={handleChange}
-        />
+        <div className="mb-5">
+          <label
+            htmlFor="skills"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Skills
+          </label>
+          <textarea
+            id="skills"
+            name="skills"
+            value={formData.skills}
+            onChange={handleChange}
+            placeholder="Your technical skills"
+            rows="4"
+            className="w-full px-4 py-2 bg-white text-gray-900 border border-gray-400 rounded-md shadow text-base resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+          />
+        </div>
+
+        <div className="mb-5">
+          <label
+            htmlFor="experience"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Experience
+          </label>
+          <textarea
+            id="experience"
+            name="experience"
+            value={formData.experience}
+            onChange={handleChange}
+            placeholder="Experience or education"
+            rows="4"
+            className="w-full px-4 py-2 bg-white text-gray-900 border border-gray-400 rounded-md shadow text-base resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+          />
+        </div>
+
+        <div className="mb-5">
+          <label
+            htmlFor="projects"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Projects
+          </label>
+          <textarea
+            id="projects"
+            name="projects"
+            value={formData.projects}
+            onChange={handleChange}
+            placeholder="List your favorite projects"
+            rows="4"
+            className="w-full px-4 py-2 bg-white text-gray-900 border border-gray-400 rounded-md shadow text-base resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+          />
+        </div>
       </section>
 
       <section>
         <h2 className="text-lg font-bold mt-6 mb-4">📬 Contact Me</h2>
-        <InputBox
-          label="Email"
-          name="email"
-          placeholder="you@example.com"
-          value={formData.email}
-          onChange={handleChange}
-        />
-        <InputBox
-          label="GitHub"
-          name="github"
-          placeholder="https://github.com/..."
-          value={formData.github}
-          onChange={handleChange}
-        />
-        <InputBox
-          label="LinkedIn"
-          name="linkedin"
-          placeholder="https://linkedin.com/in/..."
-          value={formData.linkedin}
-          onChange={handleChange}
-        />
+        <div className="mb-5">
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Email
+          </label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="you@example.com"
+            className={`w-full px-4 py-2 bg-white text-gray-900 border ${
+              errors.email ? "border-red-500" : "border-gray-400"
+            } rounded-md shadow placeholder:text-gray-500 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 transition`}
+          />
+          {errors.email && (
+            <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+          )}
+        </div>
+
+        <div className="mb-5">
+          <label
+            htmlFor="github"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            GitHub
+          </label>
+          <input
+            id="github"
+            name="github"
+            type="text"
+            value={formData.github}
+            onChange={handleChange}
+            placeholder="https://github.com/..."
+            className="w-full px-4 py-2 bg-white text-gray-900 border border-gray-400 rounded-md shadow text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+          />
+        </div>
+
+        <div className="mb-5">
+          <label
+            htmlFor="linkedin"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            LinkedIn
+          </label>
+          <input
+            id="linkedin"
+            name="linkedin"
+            type="text"
+            value={formData.linkedin}
+            onChange={handleChange}
+            placeholder="https://linkedin.com/in/..."
+            className="w-full px-4 py-2 bg-white text-gray-900 border border-gray-400 rounded-md shadow text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+          />
+        </div>
       </section>
-    </div>
+
+      <div className="mt-6 flex justify-end">
+        <button
+          type="submit"
+          className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition"
+        >
+          Submit
+        </button>
+      </div>
+    </form>
   );
 }
