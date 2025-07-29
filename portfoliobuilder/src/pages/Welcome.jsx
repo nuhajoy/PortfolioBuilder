@@ -135,7 +135,7 @@ export default function Welcome() {
         </section>
 
         {/* CTA Section */}
-        <section className="py-20 bg-gradient-to-r from-indigo-600 to-purple-600">
+        <section className="py-20 bg-indigo-600 ">
           <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
             <h2 className="text-4xl font-bold text-white mb-4">
               Ready to Create Your Portfolio?
