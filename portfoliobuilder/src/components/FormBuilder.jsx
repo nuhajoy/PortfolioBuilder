@@ -33,7 +33,7 @@ export default function FormBuilder({ formData, setFormData }) {
     if (!validateForm()) return;
 
     //  Proceed with next actions (submit, preview, etc.)
-    console.log("Form is valid and ready:", formData);
+    // console.log("Form is valid and ready:", formData);
   };
 
   return (
@@ -246,14 +246,14 @@ export default function FormBuilder({ formData, setFormData }) {
         </div>
       </section>
 
-      <div className="mt-6 flex justify-end">
+      {/* <div className="mt-6 flex justify-end">
         <button
           type="submit"
           className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition"
         >
           Submit
         </button>
-      </div>
+      </div> */}
     </form>
   );
 }
